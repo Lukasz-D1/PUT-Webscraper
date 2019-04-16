@@ -14,9 +14,9 @@ class SearchEngineHandler:
 
         raise NotImplementedError
 
-    def get_results_from_google(self, phrase):
+    def get_results_from_google(self, phrase, how_many_rows):
         tab = []
-        for i in search(phrase, tld="com", num=10, start=0, stop=10, pause=2):
+        for i in search(phrase, tld="com", num=how_many_rows, start=0, stop=how_many_rows, pause=2):
             tab.append(i)
         return tab
 
@@ -24,6 +24,6 @@ class SearchEngineHandler:
 
 if __name__ == "__main__":
     handler = SearchEngineHandler()
-    tab = handler.get_results_from_google('ziemniaczki')
+    tab = handler.get_results_from_google('ziemniaczki',20)
     for i in tab:
         print(i)
