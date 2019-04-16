@@ -48,6 +48,13 @@ class WebpageAnalyzer:
         for a in soup.find_all('a', href=True):
             print("Found:", a['href'])
 
+    websites_list = ["http://www.pyszne.pl", "http://fee.put.poznan.pl/index.php/en/"]
+
+    def scrap_multiple_websites(self, websites_list):
+        for site in websites_list:
+            print(site)
+            self.get_urls_with_description(site)
+
 
 
 if __name__ == "__main__":
