@@ -3,6 +3,7 @@ import bs4
 
 from pprint import pprint
 
+
 class WebpageAnalyzer:
     def __init__(self):
         pass
@@ -11,11 +12,11 @@ class WebpageAnalyzer:
         """
         Returns source of given webpage or raises exception if page not accessible
         :param webpage_url: URL to obtain source code from
-        :return: string of raw source code
+        :return: string of raw source code, webpage url from response
         """
         response = requests.get(webpage_url)
         if response.status_code == 200:
-            return response.text
+            return response.text, response.url[:-1]
         else:
             raise Exception(f"Source not obtained, response status code: [{response.status_code}]")
 
@@ -31,7 +32,7 @@ class WebpageAnalyzer:
 
         raise NotImplementedError
 
-    def get_urls_with_description(self, webpage_url, location=None):
+    def get_urls_with_description(self, webpage_url, file_location=None):
         """
         Analyzes given webpage and returns list of tuples with links and descriptions found,
         optionally saves obtained data to the file
@@ -41,7 +42,7 @@ class WebpageAnalyzer:
         """
 
         try:
-            webpage_source = self.get_webpage_source(webpage_url)
+            webpage_source, webpage_url_from_request = self.get_webpage_source(webpage_url)
         except Exception:
             raise Exception("URLs not obtained")
 
@@ -50,16 +51,20 @@ class WebpageAnalyzer:
         output_tuple_list = []
         for a in soup.find_all('a', href=True):
             if a['href'][:4] != "http":
-                result_tuple = (webpage_url + a['href'], a.string)
+                result_tuple = (webpage_url_from_request + a['href'], a.string)
             else:
                 result_tuple = (a['href'], a.string)
             output_tuple_list.append(result_tuple)
 
+        if file_location:
+            file = open(file_location, 'w+')
+            for item in output_tuple_list:
+                file.write(item[0] + "\t" + str(item[1]) + "\n")
         return output_tuple_list
 
 
 if __name__ == "__main__":
     anal = WebpageAnalyzer()
-    urls = anal.get_urls_with_description("http://www.pyszne.pl")
+    urls = anal.get_urls_with_description("http://pyszne.pl", "file.txt")
 
     pprint(urls)
