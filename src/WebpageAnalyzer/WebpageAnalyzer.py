@@ -4,7 +4,7 @@ import urllib.request
 from pprint import pprint
 import time
 from urllib.parse import urlparse
-
+import os
 
 class WebpageAnalyzer:
     def __init__(self):
@@ -41,14 +41,27 @@ class WebpageAnalyzer:
         for img in soup.findAll('img'):
             images.append(img.get('src'))
 
+        images_for_download = []
         for i in images:
             if i[:4] != "http":
                 file_name = webpage_url + i
+                file = urllib.request.urlopen(file_name)
+                file_size = len(file.read())
+                if file_size > min_threshold and file_size<max_threshold:
+                    images_for_download.append(file_name)
             else:
                 file_name = i
+                file = urllib.request.urlopen(file_name)
+                file_size = len(file.read())
+                if file_size > min_threshold and file_size < max_threshold:
+                    images_for_download.append(file_name)
 
-            i = i.split('/')[-1]
-            urllib.request.urlretrieve(file_name, location + str(time.time()) + "_" + i)
+        if not os.path.exists(location):
+            os.makedirs(location)
+
+        for i in images_for_download:
+            name = i.split('/')[-1]
+            urllib.request.urlretrieve(i, location + str(time.time()) + "_" + name)
 
         return len(images)
 
@@ -103,7 +116,7 @@ if __name__ == "__main__":
 
     websites_list = ["http://www.pyszne.pl", "http://fee.put.poznan.pl/index.php/en/"]
 
-    images = anal.get_images("http://pyszne.pl", "images/")
+    images = anal.get_images("http://pyszne.pl", "images/",2000,14000)
     urls = anal.scrap_multiple_websites(websites_list, "file.txt")
 
     pprint(urls)
