@@ -1,9 +1,21 @@
 import requests
-
+import bs4
 
 class WebpageAnalyzer:
     def __init__(self):
         pass
+
+    def get_webpage_source(self, webpage_url):
+        """
+        Returns source of given webpage or raises exception if page not accessible
+        :param webpage_url: URL to obtain source code from
+        :return: string of raw source code
+        """
+        response = requests.get(webpage_url)
+        if response.status_code == 200:
+            return response.text
+        else:
+            raise Exception(f"Source not obtained, response status code: [{response.status_code}]")
 
     def get_images(self, webpage_source, location, min_threshold, max_threshold):
         """
@@ -17,30 +29,27 @@ class WebpageAnalyzer:
 
         raise NotImplementedError
 
-    def get_urls_with_description(self, webpage_source, location=None):
+    def get_urls_with_description(self, webpage_url, location=None):
         """
         Analyzes given webpage and returns list of tuples with links and descriptions found,
         optionally saves obtained data to the file
-        :param webpage: URL to the webpage to process
+        :param webpage_url: URL to the webpage to process
         :param location: optional location to which file with, None can be passed
         :return: list of tuples {url : description of link}
         """
 
-        raise NotImplementedError
+        try:
+            webpage_source = self.get_webpage_source(webpage_url)
+        except Exception:
+            raise Exception("URLs not obtained")
 
-    @staticmethod
-    def get_webpage_source(webpage_url):
-        """
-        Returns source of given webpage or raises exception if page not accessible
-        :param webpage_url: URL to obtain source code from
-        :return: string of raw source code
-        """
-        response = requests.get(webpage_url)
-        if response.status_code == 200:
-            return response.text
-        else:
-            raise Exception(f"Source not obtained, response status code: [{response.status_code}]")
+        soup = bs4.BeautifulSoup(webpage_source)
+
+        for a in soup.find_all('a', href=True):
+            print("Found:", a['href'])
+
 
 
 if __name__ == "__main__":
-    print(WebpageAnalyzer.get_webpage_source("https://www.pyszne.pl/"))
+    anal = WebpageAnalyzer()
+    anal.get_urls_with_description("http://www.pyszne.pl")
