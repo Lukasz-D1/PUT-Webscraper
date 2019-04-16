@@ -2,6 +2,8 @@ import requests
 import bs4
 import urllib.request
 from pprint import pprint
+import time
+from urllib.parse import urlparse
 
 
 class WebpageAnalyzer:
@@ -16,11 +18,13 @@ class WebpageAnalyzer:
         """
         response = requests.get(webpage_url)
         if response.status_code == 200:
-            return response.text, response.url[:-1]
+            u = urlparse(response.url)
+            link = u.scheme + "://" + u.netloc
+            return response.text, link
         else:
             raise Exception(f"Source not obtained, response status code: [{response.status_code}]")
 
-    def get_images(self,webpage_url , location=None, min_threshold=None, max_threshold=None):
+    def get_images(self, webpage_url, location, min_threshold=None, max_threshold=None):
         """
         Analyzes given webpage and downloads all images meeting given requirements
         :param webpage_url: URL to the site to download images from
@@ -40,14 +44,13 @@ class WebpageAnalyzer:
         for i in images:
             if i[:4] != "http":
                 file_name = webpage_url + i
-                i = i.split('/')[-1]
-                urllib.request.urlretrieve(file_name, i)
             else:
                 file_name = i
-                i = i.split('/')[-1]
-                urllib.request.urlretrieve(file_name, i)
 
-        return  len(images)
+            i = i.split('/')[-1]
+            urllib.request.urlretrieve(file_name, location + str(time.time()) + "_" + i)
+
+        return len(images)
 
     def get_urls_with_description(self, webpage_url, file_location=None):
         """
@@ -100,8 +103,7 @@ if __name__ == "__main__":
 
     websites_list = ["http://www.pyszne.pl", "http://fee.put.poznan.pl/index.php/en/"]
 
-    urls = anal.get_urls_with_description("http://pyszne.pl", "file.txt")
-    images = anal.get_images("http://pyszne.pl")
+    images = anal.get_images("http://pyszne.pl", "images/")
     urls = anal.scrap_multiple_websites(websites_list, "file.txt")
 
     pprint(urls)
