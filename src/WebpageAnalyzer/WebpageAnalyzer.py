@@ -43,10 +43,17 @@ class WebpageAnalyzer:
         except Exception:
             raise Exception("URLs not obtained")
 
-        soup = bs4.BeautifulSoup(webpage_source)
+        soup = bs4.BeautifulSoup(webpage_source, features="html.parser")
 
+        output_tuple_list = []
         for a in soup.find_all('a', href=True):
-            print("Found:", a['href'])
+            if a['href'][:4] != "http":
+                result_tuple = (webpage_url + a['href'], a.string)
+            else:
+                result_tuple = (a['href'], a.string)
+            output_tuple_list.append(result_tuple)
+
+        return output_tuple_list
 
     websites_list = ["http://www.pyszne.pl", "http://fee.put.poznan.pl/index.php/en/"]
 
@@ -54,7 +61,6 @@ class WebpageAnalyzer:
         for site in websites_list:
             print(site)
             self.get_urls_with_description(site)
-
 
 
 if __name__ == "__main__":
