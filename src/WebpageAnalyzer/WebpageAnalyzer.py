@@ -62,7 +62,6 @@ class WebpageAnalyzer:
 
         return output_tuple_list
 
-
     def scrap_multiple_websites(self, websites_list):
         for site in websites_list:
             print(site)
