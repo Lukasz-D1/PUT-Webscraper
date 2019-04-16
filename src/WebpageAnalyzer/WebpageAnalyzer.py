@@ -41,25 +41,25 @@ class WebpageAnalyzer:
         :return: list of tuples {url : description of link}
         """
 
-        try:
-            webpage_source, webpage_url_from_request = self.get_webpage_source(webpage_url)
-        except Exception:
-            raise Exception("URLs not obtained")
+        webpage_source, webpage_url_from_request = self.get_webpage_source(webpage_url)
 
         soup = bs4.BeautifulSoup(webpage_source, features="html.parser")
 
         output_tuple_list = []
         for a in soup.find_all('a', href=True):
             if a['href'][:4] != "http":
+                # if url does not start with a word "http" add webpage address to the beginning
                 result_tuple = (webpage_url_from_request + a['href'], a.string)
             else:
                 result_tuple = (a['href'], a.string)
             output_tuple_list.append(result_tuple)
 
         if file_location:
+            # save results in the file
             file = open(file_location, 'w+')
             for item in output_tuple_list:
                 file.write(item[0] + "\t" + str(item[1]) + "\n")
+                
         return output_tuple_list
 
 
