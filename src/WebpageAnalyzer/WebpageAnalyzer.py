@@ -1,6 +1,6 @@
 import requests
 import bs4
-
+import urllib.request
 from pprint import pprint
 
 
@@ -20,7 +20,7 @@ class WebpageAnalyzer:
         else:
             raise Exception(f"Source not obtained, response status code: [{response.status_code}]")
 
-    def get_images(self, webpage_source, location, min_threshold, max_threshold):
+    def get_images(self,webpage_url , location=None, min_threshold=None, max_threshold=None):
         """
         Analyzes given webpage and downloads all images meeting given requirements
         :param webpage: URL to the site to download images from
@@ -29,8 +29,25 @@ class WebpageAnalyzer:
         :param max_threshold: maximum image size in bytes
         :return: number of images downloaded
         """
+        webpage_source, webpage_url_from_request = self.get_webpage_source(webpage_url)
 
-        raise NotImplementedError
+        soup = bs4.BeautifulSoup(webpage_source, features="html.parser")
+
+        images = []
+        for img in soup.findAll('img'):
+            images.append(img.get('src'))
+
+        for i in images:
+            if i[:4] != "http":
+                file_name = webpage_url + i
+                i = i.split('/')[-1]
+                urllib.request.urlretrieve(file_name, i)
+            else:
+                file_name = i
+                i = i.split('/')[-1]
+                urllib.request.urlretrieve(file_name, i)
+
+        return  len(images)
 
     def get_urls_with_description(self, webpage_url, file_location=None):
         """
@@ -74,5 +91,6 @@ if __name__ == "__main__":
     websites_list = ["http://www.pyszne.pl", "http://fee.put.poznan.pl/index.php/en/"]
 
     urls = anal.get_urls_with_description("http://pyszne.pl", "file.txt")
+    images = anal.get_images("http://pyszne.pl")
 
     pprint(urls)
