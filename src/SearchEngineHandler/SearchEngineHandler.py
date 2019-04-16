@@ -1,3 +1,5 @@
+from googlesearch import search
+
 class SearchEngineHandler:
     def __init__(self):
         pass
@@ -12,6 +14,16 @@ class SearchEngineHandler:
 
         raise NotImplementedError
 
+    def get_results_from_google(self, phrase, how_many_rows):
+        tab = []
+        for i in search(phrase, tld="com", num=how_many_rows, start=0, stop=how_many_rows, pause=2):
+            tab.append(i)
+        return tab
+
+
 
 if __name__ == "__main__":
-    pass
+    handler = SearchEngineHandler()
+    tab = handler.get_results_from_google('ziemniaczki',20)
+    for i in tab:
+        print(i)

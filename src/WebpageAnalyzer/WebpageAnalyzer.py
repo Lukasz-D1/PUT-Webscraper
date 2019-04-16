@@ -59,12 +59,21 @@ class WebpageAnalyzer:
             file = open(file_location, 'w+')
             for item in output_tuple_list:
                 file.write(item[0] + "\t" + str(item[1]) + "\n")
-                
+
         return output_tuple_list
+
+
+    def scrap_multiple_websites(self, websites_list):
+        for site in websites_list:
+            print(site)
+            self.get_urls_with_description(site)
 
 
 if __name__ == "__main__":
     anal = WebpageAnalyzer()
+
+    websites_list = ["http://www.pyszne.pl", "http://fee.put.poznan.pl/index.php/en/"]
+
     urls = anal.get_urls_with_description("http://pyszne.pl", "file.txt")
 
     pprint(urls)
