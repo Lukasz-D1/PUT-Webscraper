@@ -24,7 +24,7 @@ class WebpageAnalyzer:
         else:
             raise Exception(f"Source not obtained, response status code: [{response.status_code}]")
 
-    def get_images(self, webpage_url, location, min_threshold=None, max_threshold=None):
+    def get_images(self, webpage_url, location, min_threshold=0, max_threshold=10000000):
         """
         Analyzes given webpage and downloads all images meeting given requirements
         :param webpage_url: URL to the site to download images from
@@ -39,7 +39,11 @@ class WebpageAnalyzer:
 
         images = []
         for img in soup.findAll('img'):
-            images.append(img.get('src'))
+            image = img.get('src')
+            if image is None:
+                image = img.get('data-original')
+            if image is not None:
+                images.append(image)
 
         images_for_download = []
         for i in images:
@@ -61,7 +65,12 @@ class WebpageAnalyzer:
 
         for i in images_for_download:
             name = i.split('/')[-1]
+            if name.__contains__('?'):
+                name=name.replace('?','')
+            # if name.endswith('.png')!= 1 and name.endswith('.jpg')!=1:
+            #     name=name+'.png'
             urllib.request.urlretrieve(i, location + str(time.time()) + "_" + name)
+
 
         return len(images)
 
@@ -116,7 +125,7 @@ if __name__ == "__main__":
 
     websites_list = ["http://www.pyszne.pl", "http://fee.put.poznan.pl/index.php/en/"]
 
-    images = anal.get_images("http://pyszne.pl", "images/",2000,14000)
+    images = anal.get_images("http://wykop.pl", "images/",0,1000000)
     urls = anal.scrap_multiple_websites(websites_list, "file.txt")
 
     pprint(urls)
