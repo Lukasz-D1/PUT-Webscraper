@@ -1,6 +1,7 @@
 import requests
 import bs4
 
+
 class WebpageAnalyzer:
     def __init__(self):
         pass
@@ -62,7 +63,29 @@ class WebpageAnalyzer:
             print(site)
             self.get_urls_with_description(site)
 
+    def scrap_subpages_filip(self, depth, website):
+        output = dict()
+        output[website] = 0
+        for _ in range(depth):
+            for key, value in output.copy().items():
+                if value == 0:
+                    try:
+                        subpages = self.get_urls_with_description(key)
+                        for subpage in subpages:
+                            if subpage[0] not in output.keys():
+                                output[subpage[0]] = 0
+                                print(".", end='')
+                    except:
+                        print("smth")
+                output[key] = value + 1
+        from pprint import pprint
+        pprint(output)
+        return output
+
 
 if __name__ == "__main__":
+
     anal = WebpageAnalyzer()
+
+   # anal.scrap_subpages(2, "http://www.michalwolski.pl/")
     anal.get_urls_with_description("http://www.pyszne.pl")
