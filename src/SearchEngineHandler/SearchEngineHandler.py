@@ -19,7 +19,6 @@ class SearchEngineHandler:
             google_results.append(webpage)
         return google_results
 
-
 if __name__ == "__main__":
     handler = SearchEngineHandler()
     tab = handler.get_results_from_google('ziemniaczki', 20)

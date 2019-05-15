@@ -26,7 +26,7 @@ class WebpageAnalyzer:
         else:
             raise Exception(f"Source not obtained, response status code: [{response.status_code}]")
 
-    def get_images(self, webpage_url, location, min_threshold=None, max_threshold=None):
+    def get_images(self, webpage_url, location, min_threshold=0, max_threshold=10000000):
         """
         Analyzes given webpage and downloads all images meeting given requirements
         :param webpage_url: URL to the site to download images from
@@ -41,7 +41,11 @@ class WebpageAnalyzer:
 
         images = []
         for img in soup.findAll('img'):
-            images.append(img.get('src'))
+            image = img.get('src')
+            if image is None:
+                image = img.get('data-original')
+            if image is not None:
+                images.append(image)
 
         images_for_download = []
         for i in images:
@@ -63,6 +67,10 @@ class WebpageAnalyzer:
 
         for i in images_for_download:
             name = i.split('/')[-1]
+            if name.__contains__('?'):
+                name=name.replace('?','')
+            # if name.endswith('.png')!= 1 and name.endswith('.jpg')!=1:
+            #     name=name+'.png'
             urllib.request.urlretrieve(i, location + str(time.time()) + "_" + name)
 
         return len(images)
@@ -111,6 +119,25 @@ class WebpageAnalyzer:
             urls = self.get_urls_with_description(site, file_location)
             output_tuple_list += urls
         return output_tuple_list
+
+    def scrap_subpages_filip(self, depth, website):
+        output = dict()
+        output[website] = 0
+        for _ in range(depth):
+            for key, value in output.copy().items():
+                if value == 0:
+                    try:
+                        subpages = self.get_urls_with_description(key)
+                        for subpage in subpages:
+                            if subpage[0] not in output.keys():
+                                output[subpage[0]] = 0
+                                print(".", end='')
+                    except:
+                        print("smth")
+                output[key] = value + 1
+        from pprint import pprint
+        pprint(output)
+        return output
 
     def scrap_subpage(self, depth, website):
         self.many_urls.append(website)
@@ -184,12 +211,14 @@ class WebpageAnalyzer:
 if __name__ == "__main__":
     anal = WebpageAnalyzer()
 
-    # websites_list = ["https://www.pyszne.pl/#cities", "http://fee.put.poznan.pl/index.php/en/"]
-    #
-    # images = anal.get_images("http://pyszne.pl", "images/", 2000, 14000)
-    # urls = anal.scrap_multiple_websites(websites_list, "file.txt")
-    #
-    # pprint(urls)
+    websites_list = ["http://www.pyszne.pl", "http://fee.put.poznan.pl/index.php/en/"]
 
+    images = anal.get_images("http://wykop.pl", "images/",0,1000000)
+    urls = anal.scrap_multiple_websites(websites_list, "file.txt")
+
+    pprint(urls)
     #sanal.scrap_subpage(depth=6, website="https://www.michalwolski.pl")
     anal.scrap_subpage_iter(depth=6, website="https://www.michalwolski.pl")
+
+   # anal.scrap_subpages(2, "http://www.michalwolski.pl/")
+    anal.get_urls_with_description("http://www.pyszne.pl")
