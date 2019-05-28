@@ -1,6 +1,6 @@
 from googlesearch import search
 from pprint import pprint
-
+from src.WebpageAnalyzer.WebpageAnalyzer import *
 
 class SearchEngineHandler:
     def __init__(self):
@@ -21,5 +21,7 @@ class SearchEngineHandler:
 
 if __name__ == "__main__":
     handler = SearchEngineHandler()
-    tab = handler.get_results_from_google('ziemniaczki', 20)
-    pprint(tab)
+    tab = handler.get_results_from_google('doskozzza', 5)
+    analyzer = WebpageAnalyzer()
+    urls = analyzer.scrap_multiple_websites(tab)
+    pprint(urls)
