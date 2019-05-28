@@ -5,6 +5,7 @@ from pprint import pprint
 import time
 from urllib.parse import urlparse
 import os
+import re
 
 class WebpageAnalyzer:
     def __init__(self):
@@ -63,14 +64,20 @@ class WebpageAnalyzer:
         if not os.path.exists(location):
             os.makedirs(location)
 
+
         for i in images_for_download:
+            flag = True
             name = i.split('/')[-1]
             if name.__contains__('?'):
                 name=name.replace('?','')
-            # if name.endswith('.png')!= 1 and name.endswith('.jpg')!=1:
-            #     name=name+'.png'
-            urllib.request.urlretrieve(i, location + str(time.time()) + "_" + name)
-
+            regexa = name
+            regexa =regexa.replace('.','\.')
+            regexa =re.compile(".*"+regexa)
+            for pom in os.listdir(location):
+                if(regexa.match(pom)):
+                    flag=False
+            if(flag == True):
+                urllib.request.urlretrieve(i, location + str(time.time()) + "_" + name)
 
         return len(images)
 
@@ -144,7 +151,7 @@ if __name__ == "__main__":
 
     websites_list = ["http://www.pyszne.pl", "http://fee.put.poznan.pl/index.php/en/"]
 
-    images = anal.get_images("http://wykop.pl", "images/",0,1000000)
+    images = anal.get_images("http://wykop.pl", "images/",10000,100000)
     urls = anal.scrap_multiple_websites(websites_list, "file.txt")
 
     pprint(urls)
