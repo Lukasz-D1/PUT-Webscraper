@@ -97,8 +97,8 @@ class WebscrapperGUI:
         try:
             # links = self.anal.get_urls_with_description(url, filename)
             url_list = urls.split(" ")
-            links = self.anal.scrap_multiple_websites(url_list, filename)
-            msgBox.showinfo("Done", f"Saved {len(links)} links to {filename}.")
+            links, length = self.anal.scrap_multiple_websites(url_list, filename)
+            msgBox.showinfo("Done", f"Saved {length} links to {filename}.")
         except Exception as e:
             msgBox.showerror("Error", f"Couldn't scrap the URL:\n {e}")
 

@@ -103,13 +103,14 @@ class WebpageAnalyzer:
                 result_tuple = (a['href'], a.contents)
             output_tuple_list.append(result_tuple)
 
+        downloaded=0
+
         if file_location:
             # save results in the file
             flag = True
-            downloaded=0
             file = open(file_location, 'a+',encoding='utf-8')
-            if (os.stat(file_location).st_size != 0,):
-                with open(file_location) as f:
+            if (os.stat(file_location).st_size != 0):
+                with open(file_location, 'a+', encoding='utf-8') as f:
                     lines = f.readlines()
                 for item in output_tuple_list:
                     for line in lines:
@@ -123,7 +124,7 @@ class WebpageAnalyzer:
                 for item in output_tuple_list:
                     downloaded+=1
                     file.write(item[0] + "\t" + str(item[1]) + "\n")
-        return downloaded
+        return output_tuple_list, downloaded
 
     def scrap_multiple_websites(self, websites_list, file_location=None):
         """
@@ -133,12 +134,12 @@ class WebpageAnalyzer:
         :param file_location: optional location to which file with, None can be passed
         :return: List of tuples {url : description of link}
         """
-        output_tuple_list = 0
+        output_tuple_list = []
         for site in websites_list:
             print("Scraping:", site)
-            urls = self.get_urls_with_description(site, file_location)
+            urls, number = self.get_urls_with_description(site, file_location)
             output_tuple_list += urls
-        return output_tuple_list
+        return output_tuple_list, number
 
     def scrap_subpages(self, depth, website, file_location=None):
         output = dict()
@@ -165,10 +166,8 @@ if __name__ == "__main__":
 
     websites_list = ["http://www.pyszne.pl", "http://fee.put.poznan.pl/index.php/en/"]
 
-    images = anal.get_images("http://wykop.pl", "images/",10000,100000)
-    urls = anal.scrap_multiple_websites(websites_list, "file.txt")
-
-    pprint(urls)
+    #images = anal.get_images("http://wykop.pl", "images/",10000,100000)
+    urls = anal.scrap_multiple_websites(websites_list, "file2.txt")
 
    # anal.scrap_subpages(2, "http://www.michalwolski.pl/")
     anal.get_urls_with_description("http://www.pyszne.pl")
