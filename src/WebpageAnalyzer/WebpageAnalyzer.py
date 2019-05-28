@@ -110,7 +110,7 @@ class WebpageAnalyzer:
             flag = True
             file = open(file_location, 'a+',encoding='utf-8')
             if (os.stat(file_location).st_size != 0):
-                with open(file_location, 'a+', encoding='utf-8') as f:
+                with open(file_location, encoding='utf-8') as f:
                     lines = f.readlines()
                 for item in output_tuple_list:
                     for line in lines:
