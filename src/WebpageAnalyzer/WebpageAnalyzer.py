@@ -151,11 +151,13 @@ class WebpageAnalyzer:
         :return: List of tuples {url : description of link}
         """
         output_tuple_list = []
+        result=0
         for site in websites_list:
             print("Scraping:", site)
             urls, number = self.get_urls_with_description(site, file_location)
             output_tuple_list += urls
-        return output_tuple_list, number
+            result+=number
+        return output_tuple_list, result
 
     def scrap_subpages(self, depth, website, file_location=None):
         output = dict()
@@ -180,12 +182,12 @@ class WebpageAnalyzer:
 if __name__ == "__main__":
     anal = WebpageAnalyzer()
 
-    websites_list = ["http://www.pyszne.pl", "http://fee.put.poznan.pl/index.php/en/"]
+    websites_list = ["http://www.pyszne.pl", "http://fee.put.poznan.pl/index.php/en/", "http://wykop.pl"]
 
-    images = anal.get_images("http://wykop.pl", "images/",10000,100000)
-    urls = anal.scrap_multiple_websites(websites_list, "file.txt")
+    #images = anal.get_images("http://wykop.pl", "images/",10000,100000)
+    urls,ilosc = anal.scrap_multiple_websites(websites_list, "file.txt")
 
-    pprint(urls)
+    print(ilosc)
 
    # anal.scrap_subpages(2, "http://www.michalwolski.pl/")
     anal.get_urls_with_description("http://www.pyszne.pl")
