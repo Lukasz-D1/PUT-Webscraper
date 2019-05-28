@@ -5,12 +5,11 @@ from pprint import pprint
 import time
 from urllib.parse import urlparse
 import os
-import json
+import re
 
 class WebpageAnalyzer:
     def __init__(self):
-        self.many_urls = []
-
+        pass
 
     def get_webpage_source(self, webpage_url):
         """
@@ -66,12 +65,19 @@ class WebpageAnalyzer:
             os.makedirs(location)
 
         for i in images_for_download:
+            flag = True
             name = i.split('/')[-1]
             if name.__contains__('?'):
                 name=name.replace('?','')
-            # if name.endswith('.png')!= 1 and name.endswith('.jpg')!=1:
-            #     name=name+'.png'
-            urllib.request.urlretrieve(i, location + str(time.time()) + "_" + name)
+            regexa = name
+            regexa =regexa.replace('.','\.')
+            regexa =re.compile(".*"+regexa)
+            for pom in os.listdir(location):
+                if(regexa.match(pom)):
+                    flag=False
+            if(flag == True):
+                urllib.request.urlretrieve(i, location + str(time.time()) + "_" + name)
+
 
         return len(images)
 
@@ -139,86 +145,84 @@ class WebpageAnalyzer:
         pprint(output)
         return output
 
-    def scrap_subpage(self, depth, website):
-        self.many_urls.append(website)
-        results = self.get_urls_with_description(website)
-
-        for result in results:
-            wyniki = self.get_urls_with_description(website)
-            print(wyniki)
-            next = result[0]
-            if next not in self.many_urls:
-                self.many_urls.append(next)
-                break
-            else:
-                continue
-
-        print(str(depth) + " at " +website)
-        print(results)
-        if depth == 1:
-            return 1
-        return self.scrap_subpage(depth-1, next)
-
-
-    def scrap_subpage_iter(self, depth, website):
-        visited_urls = []
-        results = self.get_urls_with_description(website)
-        visited_urls.append(website)
-        # for result in results:
-        #     for i in range(depth):
-        #         iter = 0
-        #         while iter < 10:
-        #             deep_results = self.get_urls_with_description(result[0])
-        #             for deep_result in deep_results:
-        #                 if deep_result[0] in visited_urls:
-        #                     continue
-        #                 else:
-        #                     visited_urls.append(deep_result[0])
-        #                     print(deep_result[0]+"\n")
-        #                     print(deep_results)
-        #                     iter += 1
-        iter = 0
-        i = 0
-        deep = 1
-
-        while iter < 2:
-            temp = results[i][0]
-            iterA = 0
-            iA = 0
-            if results[i][0] not in visited_urls and website in results[i][0]:
-                deep_results = self.get_urls_with_description(results[i][0])
-                visited_urls.append(results[i][0])
-                print("\n" + str(deep)+ results[i][0])
-                print(deep_results)
-
-                while iterA < 2:
-                    deep +=1
-                    tempA = deep_results[iA][0]
-                    if deep_results[iA][0] not in visited_urls and website in deep_results[iA][0]:
-                        deeper_results = self.get_urls_with_description(deep_results[iA][0])
-                        print("\n" + str(deep) + deep_results[iA][0])
-                        print(deeper_results)
-
-
-                        iterA+=1
-                        visited_urls.append(deep_results[iA][0])
-                    iA+=1
-                    deep -= 1
-
-                iter+=1
-            i+=1
+    # def scrap_subpage(self, depth, website):
+    #     self.many_urls.append(website)
+    #     results = self.get_urls_with_description(website)
+    #
+    #     for result in results:
+    #         wyniki = self.get_urls_with_description(website)
+    #         print(wyniki)
+    #         next = result[0]
+    #         if next not in self.many_urls:
+    #             self.many_urls.append(next)
+    #             break
+    #         else:
+    #             continue
+    #
+    #     print(str(depth) + " at " +website)
+    #     print(results)
+    #     if depth == 1:
+    #         return 1
+    #     return self.scrap_subpage(depth-1, next)
+    #
+    #
+    # def scrap_subpage_iter(self, depth, website):
+    #     visited_urls = []
+    #     results = self.get_urls_with_description(website)
+    #     visited_urls.append(website)
+    #     # for result in results:
+    #     #     for i in range(depth):
+    #     #         iter = 0
+    #     #         while iter < 10:
+    #     #             deep_results = self.get_urls_with_description(result[0])
+    #     #             for deep_result in deep_results:
+    #     #                 if deep_result[0] in visited_urls:
+    #     #                     continue
+    #     #                 else:
+    #     #                     visited_urls.append(deep_result[0])
+    #     #                     print(deep_result[0]+"\n")
+    #     #                     print(deep_results)
+    #     #                     iter += 1
+    #     iter = 0
+    #     i = 0
+    #     deep = 1
+    #
+    #     while iter < 2:
+    #         temp = results[i][0]
+    #         iterA = 0
+    #         iA = 0
+    #         if results[i][0] not in visited_urls and website in results[i][0]:
+    #             deep_results = self.get_urls_with_description(results[i][0])
+    #             visited_urls.append(results[i][0])
+    #             print("\n" + str(deep)+ results[i][0])
+    #             print(deep_results)
+    #
+    #             while iterA < 2:
+    #                 deep +=1
+    #                 tempA = deep_results[iA][0]
+    #                 if deep_results[iA][0] not in visited_urls and website in deep_results[iA][0]:
+    #                     deeper_results = self.get_urls_with_description(deep_results[iA][0])
+    #                     print("\n" + str(deep) + deep_results[iA][0])
+    #                     print(deeper_results)
+    #
+    #
+    #                     iterA+=1
+    #                     visited_urls.append(deep_results[iA][0])
+    #                 iA+=1
+    #                 deep -= 1
+    #
+    #             iter+=1
+    #         i+=1
 
 if __name__ == "__main__":
     anal = WebpageAnalyzer()
 
     websites_list = ["http://www.pyszne.pl", "http://fee.put.poznan.pl/index.php/en/"]
 
-    images = anal.get_images("http://wykop.pl", "images/",0,1000000)
+    images = anal.get_images("http://wykop.pl", "images/",10000,100000)
     urls = anal.scrap_multiple_websites(websites_list, "file.txt")
 
     pprint(urls)
-    #sanal.scrap_subpage(depth=6, website="https://www.michalwolski.pl")
-    anal.scrap_subpage_iter(depth=6, website="https://www.michalwolski.pl")
 
    # anal.scrap_subpages(2, "http://www.michalwolski.pl/")
     anal.get_urls_with_description("http://www.pyszne.pl")
