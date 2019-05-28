@@ -7,6 +7,7 @@ from urllib.parse import urlparse
 import os
 import re
 
+
 class WebpageAnalyzer:
     def __init__(self):
         pass
@@ -52,7 +53,7 @@ class WebpageAnalyzer:
                 file_name = webpage_url + i
                 file = urllib.request.urlopen(file_name)
                 file_size = len(file.read())
-                if file_size > min_threshold and file_size<max_threshold:
+                if file_size > min_threshold and file_size < max_threshold:
                     images_for_download.append(file_name)
             else:
                 file_name = i
@@ -64,22 +65,23 @@ class WebpageAnalyzer:
         if not os.path.exists(location):
             os.makedirs(location)
 
-
         for i in images_for_download:
             flag = True
+            downloaded =0
             name = i.split('/')[-1]
             if name.__contains__('?'):
-                name=name.replace('?','')
+                name = name.replace('?', '')
             regexa = name
-            regexa =regexa.replace('.','\.')
-            regexa =re.compile(".*"+regexa)
+            regexa = regexa.replace('.', '\.')
+            regexa = re.compile(".*" + regexa)
             for pom in os.listdir(location):
-                if(regexa.match(pom)):
-                    flag=False
-            if(flag == True):
+                if (regexa.match(pom)):
+                    flag = False
+            if (flag == True):
+                downloaded+=1
                 urllib.request.urlretrieve(i, location + str(time.time()) + "_" + name)
 
-        return len(images)
+        return downloaded
 
     def get_urls_with_description(self, webpage_url, file_location=None):
         """
@@ -105,11 +107,25 @@ class WebpageAnalyzer:
 
         if file_location:
             # save results in the file
+            flag = True
+            downloaded=0
             file = open(file_location, 'a+')
-            for item in output_tuple_list:
-                file.write(item[0] + "\t" + str(item[1]) + "\n")
-
-        return output_tuple_list
+            if (os.stat(file_location).st_size != 0):
+                with open(file_location) as f:
+                    lines = f.readlines()
+                for item in output_tuple_list:
+                    for line in lines:
+                        regex = line.split('\t')[0]
+                        if item[0] == regex:
+                            flag=False
+                    if flag == True:
+                        downloaded+=1
+                        file.write(item[0] + "\t" + str(item[1]) + "\n")
+            else:
+                for item in output_tuple_list:
+                    downloaded+=1
+                    file.write(item[0] + "\t" + str(item[1]) + "\n")
+        return downloaded
 
     def scrap_multiple_websites(self, websites_list, file_location=None):
         """
@@ -119,7 +135,7 @@ class WebpageAnalyzer:
         :param file_location: optional location to which file with, None can be passed
         :return: List of tuples {url : description of link}
         """
-        output_tuple_list = []
+        output_tuple_list = 0
         for site in websites_list:
             print("Scraping:", site)
             urls = self.get_urls_with_description(site, file_location)
@@ -149,12 +165,12 @@ class WebpageAnalyzer:
 if __name__ == "__main__":
     anal = WebpageAnalyzer()
 
-    websites_list = ["http://www.pyszne.pl", "http://fee.put.poznan.pl/index.php/en/"]
+    websites_list = ["https://www.pyszne.pl/", "http://fee.put.poznan.pl/index.php/en/"]
 
-    images = anal.get_images("http://wykop.pl", "images/",10000,100000)
+    #images = anal.get_images("http://wykop.pl", "images/",10000,100000)
     urls = anal.scrap_multiple_websites(websites_list, "file.txt")
-
+    print("Pobrano "+ str(urls))
     pprint(urls)
 
-   # anal.scrap_subpages(2, "http://www.michalwolski.pl/")
-    anal.get_urls_with_description("http://www.pyszne.pl")
+    # anal.scrap_subpages(2, "http://www.michalwolski.pl/")
+    #anal.get_urls_with_description("http://www.pyszne.pl")
