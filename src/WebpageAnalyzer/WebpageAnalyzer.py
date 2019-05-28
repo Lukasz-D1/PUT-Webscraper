@@ -21,7 +21,7 @@ class WebpageAnalyzer:
         if response.status_code == 200:
             u = urlparse(response.url)
             link = u.scheme + "://" + u.netloc
-            return response.text, link
+            return response.content, link
         else:
             raise Exception(f"Source not obtained, response status code: [{response.status_code}]")
 
@@ -93,19 +93,18 @@ class WebpageAnalyzer:
         webpage_source, webpage_url_from_request = self.get_webpage_source(webpage_url)
 
         soup = bs4.BeautifulSoup(webpage_source, features="html.parser")
-
         output_tuple_list = []
         for a in soup.find_all('a', href=True):
             if a['href'][:4] != "http":
                 # if url does not start with a word "http" add webpage address to the beginning
-                result_tuple = (webpage_url_from_request + a['href'], a.string)
+                result_tuple = (webpage_url_from_request + a['href'], a.contents)
             else:
-                result_tuple = (a['href'], a.string)
+                result_tuple = (a['href'], a.contents)
             output_tuple_list.append(result_tuple)
 
         if file_location:
             # save results in the file
-            file = open(file_location, 'a+')
+            file = open(file_location, 'a+', encoding="utf-8")
             for item in output_tuple_list:
                 file.write(item[0] + "\t" + str(item[1]) + "\n")
 
