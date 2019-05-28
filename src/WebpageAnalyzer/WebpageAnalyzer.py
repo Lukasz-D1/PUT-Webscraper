@@ -6,6 +6,7 @@ import time
 from urllib.parse import urlparse
 import os
 
+
 class WebpageAnalyzer:
     def __init__(self):
         pass
@@ -51,7 +52,7 @@ class WebpageAnalyzer:
                 file_name = webpage_url + i
                 file = urllib.request.urlopen(file_name)
                 file_size = len(file.read())
-                if file_size > min_threshold and file_size<max_threshold:
+                if file_size > min_threshold and file_size < max_threshold:
                     images_for_download.append(file_name)
             else:
                 file_name = i
@@ -66,11 +67,10 @@ class WebpageAnalyzer:
         for i in images_for_download:
             name = i.split('/')[-1]
             if name.__contains__('?'):
-                name=name.replace('?','')
+                name = name.replace('?', '')
             # if name.endswith('.png')!= 1 and name.endswith('.jpg')!=1:
             #     name=name+'.png'
             urllib.request.urlretrieve(i, location + str(time.time()) + "_" + name)
-
 
         return len(images)
 
@@ -119,7 +119,7 @@ class WebpageAnalyzer:
             output_tuple_list += urls
         return output_tuple_list
 
-    def scrap_subpages_filip(self, depth, website):
+    def scrap_subpages(self, depth, website):
         output = dict()
         output[website] = 0
         for _ in range(depth):
@@ -144,10 +144,10 @@ if __name__ == "__main__":
 
     websites_list = ["http://www.pyszne.pl", "http://fee.put.poznan.pl/index.php/en/"]
 
-    images = anal.get_images("http://wykop.pl", "images/",0,1000000)
+    images = anal.get_images("http://wykop.pl", "images/", 0, 1000000)
     urls = anal.scrap_multiple_websites(websites_list, "file.txt")
 
     pprint(urls)
 
-   # anal.scrap_subpages(2, "http://www.michalwolski.pl/")
+    anal.scrap_subpages(1, "http://www.michalwolski.pl/")
     anal.get_urls_with_description("http://www.pyszne.pl")

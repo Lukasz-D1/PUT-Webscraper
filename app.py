@@ -1,2 +1,5 @@
+from src.GUI.GUI import WebscrapperGUI
+
 if __name__ == "__main__":
-    pass
+    g = WebscrapperGUI()
+    g.start()
