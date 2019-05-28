@@ -136,7 +136,7 @@ class WebscrapperGUI:
         try:
             url_list = urls.split(" ")
 
-            count = self.anal.scrap_multiple_images(url_list, location, min_threshold, max_threshold)
+            count = self.anal.get_images_from_multiple_websites(url_list, location, min_threshold, max_threshold)
 
             msgBox.showinfo("Done", f"Downloaded {count} images to {location}.")
 
