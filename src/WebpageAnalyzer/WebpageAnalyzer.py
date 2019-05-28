@@ -140,14 +140,14 @@ class WebpageAnalyzer:
             output_tuple_list += urls
         return output_tuple_list
 
-    def scrap_subpages_filip(self, depth, website):
+    def scrap_subpages(self, depth, website, file_location=None):
         output = dict()
         output[website] = 0
         for _ in range(depth):
             for key, value in output.copy().items():
                 if value == 0:
                     try:
-                        subpages = self.get_urls_with_description(key)
+                        subpages = self.get_urls_with_description(key, file_location)
                         for subpage in subpages:
                             if subpage[0] not in output.keys():
                                 output[subpage[0]] = 0
