@@ -150,11 +150,13 @@ class WebpageAnalyzer:
         :return: List of tuples {url : description of link}
         """
         output_tuple_list = []
+        result=0
         for site in websites_list:
             print("Scraping:", site)
             urls, number = self.get_urls_with_description(site, file_location)
             output_tuple_list += urls
-        return output_tuple_list, number
+            result+=number
+        return output_tuple_list, result
 
     def scrap_subpages(self, depth, website, file_location=None):
         output = dict()
@@ -163,13 +165,13 @@ class WebpageAnalyzer:
             for key, value in output.copy().items():
                 if value == 0:
                     try:
-                        subpages = self.get_urls_with_description(key, file_location)
+                        subpages, _ = self.get_urls_with_description(key, file_location)
                         for subpage in subpages:
                             if subpage[0] not in output.keys():
                                 output[subpage[0]] = 0
                                 print(".", end='')
-                    except:
-                        print("smth")
+                    except Exception as e:
+                        print("e")
                 output[key] = value + 1
         from pprint import pprint
         pprint(output)
@@ -178,6 +180,17 @@ class WebpageAnalyzer:
 
 if __name__ == "__main__":
     anal = WebpageAnalyzer()
+    #
+    # websites_list = ["http://www.pyszne.pl", "http://fee.put.poznan.pl/index.php/en/", "http://wykop.pl"]
+    #
+    # #images = anal.get_images("http://wykop.pl", "images/",10000,100000)
+    # urls,ilosc = anal.scrap_multiple_websites(websites_list, "file.txt")
+    #
+    # print(ilosc)
+
+    print(anal.scrap_subpages(1, "http://info.cern.ch/"))
+
+    #anal.get_urls_with_description("http://www.pyszne.pl")
 
    #  websites_list = ["http://www.pyszne.pl", "http://fee.put.poznan.pl/index.php/en/"]
    #

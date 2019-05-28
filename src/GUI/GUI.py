@@ -12,10 +12,10 @@ class WebscrapperGUI:
 
     def start(self):
         # Main window
-        WindowMain = tkinter.Tk("Webscrapper")
+        WindowMain = tkinter.Tk("Webscraper")
         WindowMain.geometry("650x300")
         WindowMain.resizable(1, 1)
-        WindowMain.title("Webscrapper")
+        WindowMain.title("Webscraper")
 
         # Variables used in the GUI
         stringGoogle = tkinter.StringVar()
