@@ -64,9 +64,9 @@ class WebpageAnalyzer:
         if not os.path.exists(location):
             os.makedirs(location)
 
+        downloaded = 0
         for i in images_for_download:
             flag = True
-            downloaded =0
             name = i.split('/')[-1]
             if name.__contains__('?'):
                 name = name.replace('?', '')
@@ -81,6 +81,22 @@ class WebpageAnalyzer:
                 urllib.request.urlretrieve(i, location + str(time.time()) + "_" + name)
 
         return downloaded
+
+    def scrap_multiple_images(self, websites_list, file_location=None,min_threshold=0, max_threshold=10000000):
+        """
+        Analyzes given webpages and returns list of tuples with links and descriptions found,
+        optionally saves obtained data to the file
+        :param websites_list: list of webpages to scrap
+        :param file_location: optional location to which file with, None can be passed
+        :return: List of tuples {url : description of link}
+        """
+        downloaded = 0
+        for site in websites_list:
+            print("Scraping:", site)
+            urls = self.get_images(site, file_location,min_threshold,max_threshold)
+            downloaded += urls
+        return downloaded
+
 
     def get_urls_with_description(self, webpage_url, file_location=None):
         """
@@ -166,8 +182,10 @@ if __name__ == "__main__":
 
     websites_list = ["http://www.pyszne.pl", "http://fee.put.poznan.pl/index.php/en/"]
 
-    #images = anal.get_images("http://wykop.pl", "images/",10000,100000)
-    urls = anal.scrap_multiple_websites(websites_list, "file2.txt")
+    images = anal.get_images("http://wykop.pl", "images/",10000,100000)
+    urls = anal.scrap_multiple_websites(websites_list, "file.txt")
+
+    pprint(urls)
 
    # anal.scrap_subpages(2, "http://www.michalwolski.pl/")
     anal.get_urls_with_description("http://www.pyszne.pl")
