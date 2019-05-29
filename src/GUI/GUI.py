@@ -23,7 +23,7 @@ class WebscrapperGUI:
         stringGoogleLabel = tkinter.StringVar()
         stringGoogle.set("ziemniaczki")
         stringGoogleN.set("5")
-        stringGoogleLabel.set("Phrase\t")
+        stringGoogleLabel.set("Phrase:\t")
 
         self.stringURL = tkinter.StringVar()
         stringURLLabel = tkinter.StringVar()

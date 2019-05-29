@@ -19,9 +19,11 @@ class SearchEngineHandler:
             google_results.append(webpage)
         return google_results
 
+
 if __name__ == "__main__":
     handler = SearchEngineHandler()
+
+    print("Get Google results for phrase doskozzza:")
     tab = handler.get_results_from_google('doskozzza', 5)
-    analyzer = WebpageAnalyzer()
-    urls = analyzer.scrap_multiple_websites(tab)
-    pprint(urls)
+    pprint(tab)
+

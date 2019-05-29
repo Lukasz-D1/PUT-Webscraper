@@ -118,28 +118,28 @@ class WebpageAnalyzer:
                 result_tuple = (a['href'], a.contents)
             output_tuple_list.append(result_tuple)
 
-        downloaded=0
+        filtered_tuples_number=0
 
         if file_location:
             # save results in the file
-            flag = True
-            file = open(file_location, 'a+',encoding='utf-8')
-            if (os.stat(file_location).st_size != 0):
-                with open(file_location, encoding='utf-8') as f:
-                    lines = f.readlines()
-                for item in output_tuple_list:
+            is_not_duplicate = True
+            file_to_write = open(file_location, 'a+', encoding='utf-8')
+            if os.stat(file_location).st_size != 0:
+                with open(file_location, encoding='utf-8') as file_to_read:
+                    lines = file_to_read.readlines()
+                for output_tuple in output_tuple_list:
                     for line in lines:
                         regex = line.split('\t')[0]
-                        if item[0] == regex:
-                            flag=False
-                    if flag == True:
-                        downloaded+=1
-                        file.write(item[0] + "\t" + str(item[1]) + "\n")
+                        if output_tuple[0] == regex:
+                            is_not_duplicate = False
+                    if is_not_duplicate:
+                        filtered_tuples_number += 1
+                        file_to_write.write(output_tuple[0] + "\t" + str(output_tuple[1]) + "\n")
             else:
-                for item in output_tuple_list:
-                    downloaded+=1
-                    file.write(item[0] + "\t" + str(item[1]) + "\n")
-        return output_tuple_list, downloaded
+                for output_tuple in output_tuple_list:
+                    filtered_tuples_number += 1
+                    file_to_write.write(output_tuple[0] + "\t" + str(output_tuple[1]) + "\n")
+        return output_tuple_list, filtered_tuples_number
 
     def scrap_multiple_websites(self, websites_list, file_location=None):
         """
@@ -150,13 +150,13 @@ class WebpageAnalyzer:
         :return: List of tuples {url : description of link}
         """
         output_tuple_list = []
-        result=0
+        multiple_filtered_tuples_number = 0
         for site in websites_list:
             print("Scraping:", site)
-            urls, number = self.get_urls_with_description(site, file_location)
+            urls, filtered_tuples_number = self.get_urls_with_description(site, file_location)
             output_tuple_list += urls
-            result+=number
-        return output_tuple_list, result
+            multiple_filtered_tuples_number += filtered_tuples_number
+        return output_tuple_list, multiple_filtered_tuples_number
 
     def scrap_subpages(self, depth, website, file_location=None):
         output = dict()
@@ -171,7 +171,7 @@ class WebpageAnalyzer:
                                 output[subpage[0]] = 0
                                 print(".", end='')
                     except Exception as e:
-                        print("e")
+                        print(e)
                 output[key] = value + 1
         from pprint import pprint
         pprint(output)
@@ -180,24 +180,15 @@ class WebpageAnalyzer:
 
 if __name__ == "__main__":
     anal = WebpageAnalyzer()
-    #
-    # websites_list = ["http://www.pyszne.pl", "http://fee.put.poznan.pl/index.php/en/", "http://wykop.pl"]
-    #
-    # #images = anal.get_images("http://wykop.pl", "images/",10000,100000)
-    # urls,ilosc = anal.scrap_multiple_websites(websites_list, "file.txt")
-    #
-    # print(ilosc)
 
+    websites_list = ["http://www.pyszne.pl", "http://fee.put.poznan.pl/index.php/en/", "http://wykop.pl"]
+
+    url_desc_tuple, num_of_scraped_items = anal.scrap_multiple_websites(websites_list, "file.txt")
+    print("Scraped URLs and descriptions:")
+    pprint(url_desc_tuple)
+
+    print("Scrap info.cern.ch with depth level 1:")
     print(anal.scrap_subpages(1, "http://info.cern.ch/"))
 
-    #anal.get_urls_with_description("http://www.pyszne.pl")
-
-   #  websites_list = ["http://www.pyszne.pl", "http://fee.put.poznan.pl/index.php/en/"]
-   #
-   #  images = anal.get_images_from_website("http://wykop.pl", "images/",10000,100000)
-   #  urls = anal.scrap_multiple_websites(websites_list, "file.txt")
-   #
-   #  pprint(urls)
-   #
-   # # anal.scrap_subpages(2, "http://www.michalwolski.pl/")
-   #  anal.get_urls_with_description("http://www.pyszne.pl")
+    num_of_downloaded_images = anal.get_images_from_website("http://wykop.pl", "images/", 10000, 100000)
+    print("Downloaded " + str(num_of_downloaded_images) + " images from wykop.pl")
